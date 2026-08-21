@@ -84,6 +84,8 @@ Init::
 
 	ei
 
+	callfar BridgeCheck ; gen1-pvp Milestone 1 upstream patch
+
 	predef LoadSGB
 
 	ld a, BANK(SFX_Shooting_Star)

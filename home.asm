@@ -82,3 +82,9 @@ INCLUDE "home/random.asm"
 INCLUDE "home/predef.asm"
 INCLUDE "home/hidden_events.asm"
 INCLUDE "home/predef_text.asm"
+; Must be the last INCLUDE in this file's "Home" ROM0 section: this file
+; opens its own SECTIONs (ROMX code, WRAM0 buffers) and RGBDS cannot
+; resume a named section from a later file, so nothing here-after may
+; still expect ROM0/"Home" placement. Include position has no effect on
+; execution order -- that's the `callfar BridgeCheck` in home/init.asm.
+INCLUDE "../pvp/bridge_check.asm" ; gen1-pvp Milestone 1 upstream patch
