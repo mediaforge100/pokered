@@ -623,7 +623,9 @@ DrawTileLine:
 
 INCLUDE "data/pokemon/dex_entries.asm"
 
-PokedexToIndex:
+PokedexToIndex:: ; gen1-pvp Milestone 7 upstream patch: exported (was
+	; local) so rom/pvp/team_builder.asm can call it without duplicating
+	; this PokedexOrder scan.
 	; converts the Pokédex number at [wPokedexNum] to an index
 	push bc
 	push hl

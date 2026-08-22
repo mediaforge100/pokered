@@ -85,6 +85,7 @@ Init::
 	ei
 
 	callfar BridgeCheck ; gen1-pvp Milestone 1 upstream patch
+	callfar TeamBuilderSpeciesPicker ; gen1-pvp Milestone 7 upstream patch
 
 	predef LoadSGB
 
