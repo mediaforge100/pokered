@@ -85,7 +85,16 @@ Init::
 	ei
 
 	callfar BridgeCheck ; gen1-pvp Milestone 1 upstream patch
-	callfar TeamBuilderSpeciesPicker ; gen1-pvp Milestone 7 upstream patch
+	; gen1-pvp Milestone 7 upstream patch: only proceed into team
+	; building if the bridge actually came back OK -- a prior version
+	; called TeamBuilderSpeciesPicker unconditionally here, so a player
+	; would see BRIDGE ERROR flash and then land in team building
+	; anyway, as if connected.
+	ld a, [wBridgeCheckResult]
+	and a
+	jr z, .skipTeamBuilder
+	callfar TeamBuilderSpeciesPicker
+.skipTeamBuilder
 
 	predef LoadSGB
 
