@@ -8,7 +8,10 @@
 ;    * db level, move
 ; - db 0 ; no more level-up moves
 
-EvosMovesPointerTable:
+EvosMovesPointerTable:: ; gen1-pvp Milestone 7 upstream patch (ADR-017): exported (was
+                        ; local `:`) so rom/pvp/match_mode.asm's own bank can FarCopyData
+                        ; from it -- same reasoning and pattern as ADR-010's own
+                        ; PokedexToIndex export (engine/menus/pokedex.asm).
 	table_width 2
 	dw RhydonEvosMoves
 	dw KangaskhanEvosMoves
