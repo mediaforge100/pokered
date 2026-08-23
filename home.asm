@@ -91,3 +91,9 @@ INCLUDE "../pvp/bridge_check.asm" ; gen1-pvp Milestone 1 upstream patch
 INCLUDE "../pvp/match_mode.asm" ; gen1-pvp Milestone 7 upstream patch (ADR-012)
 INCLUDE "../pvp/team_builder.asm" ; gen1-pvp Milestone 7 upstream patch
 INCLUDE "../pvp/wram_reclaim.asm" ; gen1-pvp Milestone 7 upstream patch (ADR-013) -- constants only, no SECTION
+; ADR-014: must come after bridge_check.asm (BRIDGE_SOF/VERSION/FRAME_SIZE/
+; CRC_LEN), match_mode.asm (BRIDGE_TYPE_MATCH_POLL/MATCH_STATUS/
+; MATCH_STATUS_MATCHED, reused unchanged), and wram_reclaim.asm
+; (wPvpOpponentSessionId/wPvpOpponentName) -- all referenced by name, so
+; RGBDS needs them already DEF'd by the time this file assembles.
+INCLUDE "../pvp/opponent_search.asm" ; gen1-pvp Milestone 7 upstream patch (ADR-014)
