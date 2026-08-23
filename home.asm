@@ -88,4 +88,5 @@ INCLUDE "home/predef_text.asm"
 ; may still expect ROM0/"Home" placement. Include position has no effect
 ; on execution order -- that's the `callfar`s in home/init.asm.
 INCLUDE "../pvp/bridge_check.asm" ; gen1-pvp Milestone 1 upstream patch
+INCLUDE "../pvp/match_mode.asm" ; gen1-pvp Milestone 7 upstream patch (ADR-012)
 INCLUDE "../pvp/team_builder.asm" ; gen1-pvp Milestone 7 upstream patch

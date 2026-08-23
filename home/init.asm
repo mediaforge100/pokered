@@ -93,6 +93,19 @@ Init::
 	ld a, [wBridgeCheckResult]
 	and a
 	jr z, .skipTeamBuilder
+	; gen1-pvp Milestone 7 upstream patch (ADR-012): try to pair with an
+	; opponent before letting the player pick anything, so a species
+	; selection has somewhere real to relay to (ADR-011). Deliberately
+	; not gated on the outcome, though: MatchModeMenu's own bounded
+	; retry budget means "no match found" is an ordinary result, not a
+	; bridge failure, and every prior single-ROM-instance test (client/
+	; tests/team_builder_test.c, client/online-bridge/online_bridge_
+	; integration_test.c, client/tests/species_relay_test.c) exercises
+	; the species picker without a second live opponent to pair with --
+	; skipping the picker on "no match" would break all of them for no
+	; behavioral gain, since selecting a species with no match to relay
+	; to is exactly ADR-010's original, still-valid standalone case.
+	callfar MatchModeMenu
 	callfar TeamBuilderSpeciesPicker
 .skipTeamBuilder
 
