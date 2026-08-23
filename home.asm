@@ -104,3 +104,12 @@ INCLUDE "../pvp/team_builder.asm" ; gen1-pvp Milestone 7 upstream patch
 ; (wPvpOpponentSessionId/wPvpOpponentName) -- all referenced by name, so
 ; RGBDS needs them already DEF'd by the time this file assembles.
 INCLUDE "../pvp/opponent_search.asm" ; gen1-pvp Milestone 7 upstream patch (ADR-014)
+; ADR-020: must come after bridge_check.asm (BRIDGE_SOF/VERSION/
+; FRAME_SIZE/CRC_LEN) and wram_reclaim.asm (wPvpBattleEvent/
+; wPvpBattleState/wPvpBattleIdlePolls/wPvpBattleBudget/
+; wPvpBattleStatus), same DEF-before-use rule as opponent_search.asm
+; above. It defines its own frame-type constants rather than reusing
+; any, so nothing else has to come first. ThinBattleRun itself is a ::
+; label, reached by callfar from match_mode.asm and opponent_search.asm,
+; so include order does not constrain those.
+INCLUDE "../pvp/thin_battle.asm" ; gen1-pvp Milestone 5 upstream patch (ADR-020)
