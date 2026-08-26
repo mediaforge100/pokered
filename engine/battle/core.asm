@@ -6837,7 +6837,12 @@ AnimateSendingOutMon:
 	add $31
 	jr CopyUncompressedPicToHL
 
-CopyUncompressedPicToTilemap:
+CopyUncompressedPicToTilemap:: ; gen1-pvp sprite-rendering upstream patch: exported
+; (was local) so rom/pvp/thin_battle.asm can farcall it -- the register-based
+; entry point right below (CopyUncompressedPicToHL) takes hl as a real
+; argument, which farcall's own bank-switch trampoline clobbers; this
+; wrapper takes its args from wPredefHL/hStartTileID instead, which
+; sidesteps that. See docs/adr/041-opponent-front-sprite.md.
 	ld a, [wPredefHL]
 	ld h, a
 	ld a, [wPredefHL + 1]
