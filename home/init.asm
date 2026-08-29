@@ -93,6 +93,49 @@ Init::
 	ld a, [wBridgeCheckResult]
 	and a
 	jr z, .skipTeamBuilder
+	; gen1-pvp upstream patch: MatchModeMenu/RealTeamBuilder/ThinBattle/
+	; BattleChoiceScreen all draw via the normal PlaceString/hlcoord
+	; convention, which only writes into wTileMap (WRAM) -- it reaches
+	; real VRAM solely through AutoBgMapTransfer, run from the VBlank
+	; handler and gated on hAutoBGTransferEnabled. That flag is off from
+	; cold boot and this project's own code doesn't turn it on until
+	; right before predef PlayIntro, below -- after every PvP screen has
+	; already run. BridgeCheck's own "BRIDGE OK" screen only ever
+	; appeared because it bypasses this pipeline and writes vBGMap0
+	; directly (see its own comment); nothing after it did the same, so
+	; every later PvP screen was invisible on real hardware/a real
+	; window despite writing correct WRAM state -- exactly the class of
+	; gap ADR-022 already named ("an event-stream test cannot verify
+	; rendering"), just one level higher up than that ADR caught: every
+	; existing test reads wTileMap directly rather than watching a real
+	; screen, so this was never observable until a human ran a real SDL
+	; window (interactive_client.c) and watched it stay on BRIDGE OK.
+	; vBGMap0, not vBGMap1: a few lines above this hook, Init sets
+	; hWY/rWY = 144 ("move the window off-screen"), so the window layer
+	; (vBGMap1 -- what init.asm's own later, post-PvP-flow setup uses,
+	; once something has moved the window back on screen) isn't visible
+	; yet here. Only the background layer is, which is also exactly
+	; where BridgeCheck writes "BRIDGE OK" directly.
+	; gen1-pvp upstream patch: enables the background WRAM(wTileMap)->VRAM
+	; transfer for the whole PvP flow -- see this comment's own earlier
+	; history for why (every PvP screen's rendering, not just the ones
+	; with their own ForceMenuSync, depends on this: ThinBattleRun's HP
+	; bars/move text/SEND_OUT all draw via the same wTileMap convention
+	; and have no explicit sync of their own). A same-destination race
+	; between this and rom/pvp/*.asm's own explicit ForceMenuSync calls
+	; was found (a real, human-visible torn cursor frame) and "fixed" by
+	; disabling this entirely -- which broke battle rendering outright,
+	; since it's the *only* thing that ever flushes everything this flag
+	; doesn't explicitly cover. Reverted: each ForceMenuSync now brackets
+	; its own copy with a local disable/restore of this flag instead (see
+	; any of their own comments), so the two mechanisms take turns
+	; owning the destination rather than one being switched off for good.
+	ld a, HIGH(vBGMap0)
+	ldh [hAutoBGTransferDest + 1], a
+	xor a
+	ldh [hAutoBGTransferDest], a
+	ld a, 1
+	ldh [hAutoBGTransferEnabled], a
 	; gen1-pvp Milestone 7 upstream patch (ADR-012): try to pair with an
 	; opponent before letting the player pick anything, so a species
 	; selection has somewhere real to relay to (ADR-011). Deliberately
